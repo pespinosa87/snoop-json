@@ -1,0 +1,35 @@
+name: Actualizar DiscoverSnoop JSON cada hora
+
+on:
+  schedule:
+    - cron: '0 * * * *' # cada hora
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repo
+        uses: actions/checkout@v3
+
+      - name: Instalar Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Instalar SDK DiscoverSnoop
+        run: npm install discover_snoop
+
+      - name: Ejecutar script
+        run: node fetch.js
+        env:
+          SNOOP_TOKEN: ${{ secrets.SNOOP_TOKEN }}
+
+      - name: Subir livepages.json actualizado
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git add livepages.json
+          git commit -m "Actualización automática" || echo "Sin cambios"
+          git push
