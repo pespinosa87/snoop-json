@@ -1,17 +1,16 @@
-name: Actualizar DiscoverSnoop JSON cada hora
+name: Actualizar JSON de DiscoverSnoop
 
 on:
   schedule:
-    - cron: '0 * * * *' # cada hora
-  workflow_dispatch:
+    - cron: '0 * * * *'  # cada hora
+  workflow_dispatch:      # 👈 esto es lo que te permite ejecutar manualmente
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Clonar repo
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
       - name: Instalar Node
         uses: actions/setup-node@v3
@@ -26,10 +25,10 @@ jobs:
         env:
           SNOOP_TOKEN: ${{ secrets.SNOOP_TOKEN }}
 
-      - name: Subir livepages.json actualizado
+      - name: Hacer commit del JSON
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
           git add livepages.json
-          git commit -m "Actualización automática" || echo "Sin cambios"
+          git commit -m "Actualización automática del JSON" || echo "Sin cambios"
           git push
